@@ -25,19 +25,18 @@ void setup()
 
 void loop()
 {
-  while(Serial1.available())     // While there is data on the RX pin...
+  while(Serial1.available())     
   {
-    int c = Serial1.read();    // load the data into a variable...
+    int c = Serial1.read();   
 
     if(gps.encode(c))      // if there is a new valid sentence...
     {
-      getgps(gps);         // then grab the data.
+      getgps(gps);         
       Serial.println("\n");
     }
   }
 }
 
-// The getgps function will get and print the values we want.
 void getgps(TinyGPS &gps)
 {
   float latitude, longitude;
