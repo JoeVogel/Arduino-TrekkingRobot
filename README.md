@@ -1,4 +1,2 @@
 TrekkingRobot
 =============
-
-Project
