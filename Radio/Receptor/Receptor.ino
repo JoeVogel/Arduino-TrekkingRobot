@@ -2,10 +2,8 @@
 #include <SPI.h>
 #include "nRF24L01.h"
 #include "RF24.h"
-#include "Motor.h"
 
 RF24 radio(9,10);
-Motor motor;
 const uint64_t pipe = 0xE8E8F0F0E1LL;
 char movimentoDesignado[20];
 
@@ -14,16 +12,14 @@ void setup(){
   radio.begin();
   radio.openReadingPipe(1,pipe);
   radio.startListening();
-
-  motor.defineRight(4,3,2);
-  motor.defineLeft(7,6,5);
 }
 
 int xref, yref;
 
 void loop(){
 
-  if (radio.available()) {
+  if (radio.available())
+  {
     bool done = false;
     while (!done)
     {
@@ -31,34 +27,9 @@ void loop(){
       /********************************************************************/
 
       splitReturn(movimentoDesignado, &xref, &yref);
-      Serial.println(yref);
-      if(xref > 505) {
-        int x = map(xref, 505, 1023, 0, 255);
-        motor.front(x);
-        makeY(yref);
-      } 
-      else if (xref < 495) {
-        int x = map(xref, 0, 495, 0, 255);
-        motor.back(255 - x);
-        makeY(yref);
-      } 
-      else {
-        if(yref > 550 || yref < 480) {
-          if(yref > 550) {
-            int y = map(yref, 505, 1023, 0, 255);
-            motor.rightPower(0);
-            motor.leftPower(y);
-          } 
-          else if (yref < 480) {
-            int y = map(yref, 0, 495, 0, 255);
-            motor.leftPower(0);
-            motor.rightPower(y);
-          }
-        } 
-        else {
-          motor.stop();
-        }
-      } 
+
+      
+
       /********************************************************************/
     }
   }
@@ -68,21 +39,6 @@ void loop(){
   }
 }
 
-
-void makeY(int y) {
-
-  if(yref > 550) {
-    int y = map(yref, 505, 1023, 0, 255);
-    motor.rightPower(255- y);
-    motor.leftPower(y);
-  } 
-  else if (yref < 480) {
-    int y = map(yref, 0, 495, 0, 255);
-    motor.leftPower(y);
-    motor.rightPower(255 - y);
-  } 
-
-}
 
 
 void splitReturn(String receiveMessage,int *x, int *y) {
