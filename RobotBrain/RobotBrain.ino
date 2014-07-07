@@ -6,9 +6,12 @@
 /* Assign a unique ID to this sensor at the same time */
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
 
+<<<<<<< HEAD
 //Declination Angle of Jaraguá do Sul is -0.31 and from Mauá is -0.35
 const float declinationAngle = -0.31;
 
+=======
+>>>>>>> 50a77c91bc8baa1cbcbd72ab647a7aacd9187e13
 void setup(){
   Serial.begin(9600);
   
