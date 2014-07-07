@@ -1,11 +1,15 @@
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_HMC5883_U.h>
+#include <Motor.h>
 
 /* Assign a unique ID to this sensor at the same time */
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
 
-setup(){
+//Declination Angle of Jaraguá do Sul is -0.31 and from Mauá is -0.35
+const float declinationAngle = -0.31;
+
+void setup(){
   Serial.begin(9600);
   
   if(!mag.begin())
@@ -15,15 +19,13 @@ setup(){
   }
 }
 
-loop(){
+void loop(){
   /* Get a new sensor event */ 
   sensors_event_t event; 
   mag.getEvent(&event);
   
   float heading = atan2(event.magnetic.y, event.magnetic.x);
   
-  //Declination Angle of Jaraguá do Sul is -0.31 and from Mauá is -0.35
-  float declinationAngle = -0.31;
   heading += declinationAngle;
   
   // Correct for when signs are reversed.
@@ -37,8 +39,9 @@ loop(){
   // Convert radians to degrees for readability.
   float headingDegrees = heading * 180/M_PI; 
   
-  if(headingDegrees <= 180)Serial.print("vire a esquerda"); 
-  else Serial.print("vire a direita");
+  if(headingDegrees > 1 && headingDegrees <= 180)Serial.println("vire a esquerda"); 
+  else if(headingDegrees> 180 && headingDegrees <= 359)Serial.println("vire a direita");
+  else if(headingDegrees < 1)Serial.println("NORTE!!!");
   
   delay(500);
 }
