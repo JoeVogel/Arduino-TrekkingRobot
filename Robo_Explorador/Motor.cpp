@@ -19,6 +19,13 @@ void Motor::defineLeft(int a, int b, int c) {
 	pinMode(c, OUTPUT);
 }
 
+void Motor::stop() {
+	this->APower = 0;
+	this->BPower = 0;
+	analogWrite(this->motorAPower, 0);
+	analogWrite(this->motorBPower, 0);
+}
+
 void Motor::front(int power) {
 	this->APower = power;
 	this->BPower = power;
