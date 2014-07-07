@@ -1,11 +1,12 @@
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_HMC5883_U.h>
+#include <Motor.h>
 
 /* Assign a unique ID to this sensor at the same time */
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
 
-setup(){
+void setup(){
   Serial.begin(9600);
   
   if(!mag.begin())
@@ -15,7 +16,7 @@ setup(){
   }
 }
 
-loop(){
+void loop(){
   /* Get a new sensor event */ 
   sensors_event_t event; 
   mag.getEvent(&event);
