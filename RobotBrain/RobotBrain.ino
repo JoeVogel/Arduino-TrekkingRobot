@@ -1,5 +1,4 @@
 #include <Wire.h>
-#include <LiquidCrystal_I2C.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_HMC5883_U.h>
 #include <Motor.h>
@@ -32,7 +31,7 @@ const float declinationAngle = -0.31;
 Points allToGo;
 Point currentPoint;
 
-
+void getgps(TinyGPS &gps, float *latitude, float *longitude);
 
 
 void setup(){
@@ -55,21 +54,19 @@ void setup(){
 
 void loop(){
   
-  if(Serial1.available())     
+  while(Serial1.available())     
   {
-    int c = Serial1.read();   
+    int c = Serial1.read();  
     if(gps.encode(c))
     {
-      getgps(&currentPoint.latitude, &currentPoint.longitude);      
+      getgps(gps, &currentPoint.latitude, &currentPoint.longitude);  
+      Serial.print("Latitude: ");
+      Serial.print(currentPoint.latitude, 5);
+      Serial.print("  -   Longitude: ");
+      Serial.print(currentPoint.longitude,5);   
+      goToNorth(); 
     }
   }
-
-  Serial.print("Latitude: ");
-  Serial.print(currentPoint.latitude);
-  Serial.print("  -  Longitude: ");
-  Serial.println(currentPoint.longitude);
-  goToNorth();
-  delay(500);
 }
 
 
@@ -77,10 +74,12 @@ bool goToNorth() {
   float currentAngle = getCurrentAngulation();
   if(currentAngle > 180) {
     //Right
-    Serial.println("Go Right");
+    Serial.print("    R: ");
+    Serial.println(currentAngle);
   } else {
     //Left
-    Serial.println("Go Left");
+    Serial.print("    L: ");
+    Serial.println(currentAngle);
   }
 }
 
@@ -112,7 +111,7 @@ float getCurrentAngulation() {
 /*
  * Retorna a latitude e longitude em relacao ao ponto atual
  */
-void getgps(float *latitude, float *longitude) {
+void getgps(TinyGPS &gps, float *latitude, float *longitude) {
   float latit, longi;
   gps.f_get_position(&latit, &longi);
   *latitude = latit;
