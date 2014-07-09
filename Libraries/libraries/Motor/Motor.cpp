@@ -1,5 +1,13 @@
 #include "Arduino.h"
-#include "Motor.h"
+#include <Motor.h>
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_HMC5883_U.h>
+#include <Compass.h>
+
+void Motor::defineCompass(Compass compass) {
+	this->compass = compass;
+}
 
 void Motor::defineRight(int a, int b, int c) {
 	this->motorARight = a;
@@ -92,5 +100,24 @@ void Motor::left(int power) {
 	this->leftPower(power);
 }
 
-void Motor::turn(int angle){
+void Motor::turnToNorth(){
+
+	float angle = this->compass.getCurrentAngulation();
+	Serial.println(angle);
+	_front();
+	if(angle > 5 && angle < 355) {
+		while(angle > 5 && angle < 355) {
+			angle = this->compass.getCurrentAngulation();
+			if(angle < 220) {
+				rightPower(250);
+				leftPower(0);
+			} else {
+				rightPower(0);
+				leftPower(250);
+			}
+		}
+	}else {
+		this->stop();
+	}
+
 }

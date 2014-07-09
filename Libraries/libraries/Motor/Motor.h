@@ -1,4 +1,8 @@
 #include "Arduino.h"
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_HMC5883_U.h>
+#include <Compass.h>
 
 #ifndef Motor_h
 #define Motor_h
@@ -12,9 +16,10 @@ public:
 
 	void defineRight(int a, int b, int c);
 	void defineLeft(int a, int b, int c);
+	void defineCompass(Compass compass);
 
 	void front(int power);
-	void turn(int angle);
+	void turnToNorth();
 	void back(int power);
 	void rightPower(int power);
 	void leftPower(int power);
@@ -33,6 +38,8 @@ private:
 
 	void _front();
 	void _back();
+
+	Compass compass;
 
 };
 
