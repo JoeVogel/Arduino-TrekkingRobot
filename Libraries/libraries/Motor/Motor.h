@@ -16,10 +16,11 @@ public:
 
 	void defineRight(int a, int b, int c);
 	void defineLeft(int a, int b, int c);
-	void defineCompass(Compass compass);
+	void defineCompass(Compass compass, int threshold);
 
 	void front(int power);
-	void turnToNorth();
+	bool turnToNorth();
+	bool turnToDirection(float goalAngle);
 	void back(int power);
 	void rightPower(int power);
 	void leftPower(int power);
@@ -35,6 +36,7 @@ private:
 	int motorBRight;
 	int motorBLeft;
 	int motorBPower;
+	int threshold;
 
 	void _front();
 	void _back();

@@ -5,8 +5,9 @@
 #include <Adafruit_HMC5883_U.h>
 #include <Compass.h>
 
-void Motor::defineCompass(Compass compass) {
+void Motor::defineCompass(Compass compass, int threshold) {
 	this->compass = compass;
+	this->threshold = threshold;
 }
 
 void Motor::defineRight(int a, int b, int c) {
@@ -100,14 +101,15 @@ void Motor::left(int power) {
 	this->leftPower(power);
 }
 
-void Motor::turnToNorth(){
+bool Motor::turnToNorth(){
 
 	float angle = this->compass.getCurrentAngulation();
-	Serial.println(angle);
 	_front();
 	if(angle > 5 && angle < 355) {
 		while(angle > 5 && angle < 355) {
 			angle = this->compass.getCurrentAngulation();
+			Serial.print("turnToNorth: ");
+			Serial.println(angle);
 			if(angle < 220) {
 				rightPower(250);
 				leftPower(0);
@@ -117,7 +119,38 @@ void Motor::turnToNorth(){
 			}
 		}
 	}else {
-		this->stop();
+		return true;
 	}
 
+}
+
+bool Motor::turnToDirection(float goalAngle) {
+	float angle = this->compass.getCurrentAngulation();
+	Serial.println(angle);
+	if(goalAngle > 365) {
+		goalAngle = 0;
+	}
+	_front();
+	if(angle > (goalAngle + this->threshold) || angle < (goalAngle - this->threshold)) {
+
+		while(angle > (goalAngle + this->threshold) || angle < (goalAngle - this->threshold)) {
+			angle = this->compass.getCurrentAngulation();
+			Serial.print("turnToDirection - ");
+			Serial.print("angle: ");
+			Serial.print(angle);
+			Serial.print("\tgoalAngle: ");
+			Serial.println(goalAngle);
+
+			if(angle < 220) {
+				rightPower(250);
+				leftPower(0);
+			} else {
+				rightPower(0);
+				leftPower(250);
+			}
+		}
+
+	}else {
+		return true;
+	}
 }

@@ -36,6 +36,11 @@ float Compass::getCurrentAngulation() {
   if(heading > 2*PI)
     heading -= 2*PI;
   float headingDegrees = heading * 180/M_PI; 
+  if(headingDegrees < 220) {
+    headingDegrees = map(headingDegrees, 0, 220, 0, 180);
+  }else{
+    headingDegrees = map(headingDegrees, 221, 360, 181, 360);
+  }
   return headingDegrees;
 
 }
