@@ -105,20 +105,22 @@ bool Motor::turnToNorth(){
 
 	float angle = this->compass.getCurrentAngulation();
 	_front();
-	if(angle > 5 && angle < 355) {
-		while(angle > 5 && angle < 355) {
+	if(angle > 10 && angle < 345) {
+		while(angle > 10 && angle < 345) {
 			angle = this->compass.getCurrentAngulation();
 			Serial.print("turnToNorth: ");
 			Serial.println(angle);
 			if(angle < 220) {
-				rightPower(250);
-				leftPower(0);
-			} else {
 				rightPower(0);
 				leftPower(250);
+			} else {
+				rightPower(250);
+				leftPower(0);
 			}
 		}
 	}else {
+		rightPower(0);
+		leftPower(0);
 		return true;
 	}
 
@@ -142,11 +144,11 @@ bool Motor::turnToDirection(float goalAngle) {
 			Serial.println(goalAngle);
 
 			if(angle < 220) {
-				rightPower(250);
-				leftPower(0);
-			} else {
 				rightPower(0);
 				leftPower(250);
+			} else {
+				rightPower(250);
+				leftPower(0);
 			}
 		}
 

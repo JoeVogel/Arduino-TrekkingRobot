@@ -48,8 +48,8 @@ void setup(){
   
   compass.init(declinationAngle);
 
-  motor.defineRight(4,3,2);
-  motor.defineLeft(7,6,5);
+  motor.defineRight(3,2,4);
+  motor.defineLeft(5,6,7);
   motor.defineCompass(compass,10);
 
   allToGo.p1.latitude = -26.91037;
@@ -73,7 +73,6 @@ void setup(){
 
 void loop(){
 
-  //motor.turnToNorth();
   /*while(Serial1.available())     
   {
     int c = Serial1.read();  
@@ -88,10 +87,10 @@ void loop(){
     }
   }*/
 
-    //goTo(allToGo.p1); //BLUMENAU
+    goTo(allToGo.p1); //BLUMENAU
     //goTo(allToGo.p2); //OTACILIO
     //goTo(allToGo.p3); //PALHOCA
-    goTo(allToGo.p4); //TESTE
+    //goTo(allToGo.p4); //TESTE
 
 }
 
@@ -142,14 +141,13 @@ void goTo(Point point) {
 
   while(distlat > 5 && distlong > 5) {
 
-    motor.turnToDirection(validationAngle);
+    while(!motor.turnToDirection(validationAngle));
 
     distlat = (point.latitude * 10000) - (currentPoint.latitude * 10000);
     distlong = (point.longitude * 10000) - (currentPoint.longitude * 10000);
 
     currentAngulation = compass.getCurrentAngulation();
-    /*Serial.print("\tgo while angulation correct:");
-    Serial.println(currentAngulation);*/
+    motor.front(255);
 
     if(distlat < 0) {
       distlat *= -1;
