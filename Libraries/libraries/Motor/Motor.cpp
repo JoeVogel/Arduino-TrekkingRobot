@@ -1,8 +1,7 @@
 #include "Arduino.h"
 #include <Motor.h>
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_HMC5883_U.h>
+#include <HMC5883L.h>
 #include <Compass.h>
 
 void Motor::defineCompass(Compass compass, int threshold) {
@@ -143,12 +142,13 @@ bool Motor::turnToDirection(float goalAngle) {
 			Serial.print("\tgoalAngle: ");
 			Serial.println(goalAngle);
 
-			if(angle < 220) {
-				rightPower(0);
-				leftPower(250);
-			} else {
+
+			if(angle < goalAngle || angle >= (360 - goalAngle)) {
 				rightPower(250);
 				leftPower(0);
+			} else if(angle >= goalAngle || angle < (360 - goalAngle)) {
+				rightPower(0);
+				leftPower(250);
 			}
 		}
 

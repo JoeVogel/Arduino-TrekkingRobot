@@ -1,7 +1,6 @@
 #include "Arduino.h"
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_HMC5883_U.h>
+#include <HMC5883L.h>
 
 #ifndef Compass_h
 #define Compass_h
@@ -14,8 +13,10 @@ public:
 
 
 private:
-	Adafruit_HMC5883_Unified mag;
+	HMC5883L mag;
 	float declinationAngle;
+	int error;
+	int previous;
 };
 
 #endif

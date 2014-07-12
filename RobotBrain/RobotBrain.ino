@@ -1,6 +1,5 @@
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_HMC5883_U.h>
+#include <HMC5883L.h>
 #include <Compass.h>
 #include <Motor.h>
 #include <TinyGPS.h>
@@ -29,7 +28,7 @@ typedef struct Points
 } Points;
 
 
-void goTo(Point point);
+bool goTo(Point point);
 
 //Declination Angle of Jaraguá do Sul is -0.31 and from Mauá is -0.35
 const float declinationAngle = -0.31;
@@ -40,32 +39,31 @@ Point currentPoint;
 
 void getgps(TinyGPS &gps, float *latitude, float *longitude);
 
+bool inited = false;
 
 void setup(){
 
   Serial.begin(TERMBAUD);
   Serial1.begin(GPSBAUD);
   
+  pinMode(49,OUTPUT);
+  digitalWrite(49,HIGH);
+
   compass.init(declinationAngle);
 
   motor.defineRight(3,2,4);
   motor.defineLeft(5,6,7);
   motor.defineCompass(compass,10);
 
-  allToGo.p1.latitude = -26.91037;
-  allToGo.p1.longitude = -49.08093;
+  allToGo.p1.latitude = -26.46644;
+  allToGo.p1.longitude = -49.11451;
 
-  allToGo.p2.latitude = -27.48182;
-  allToGo.p2.longitude = -50.12584;
+  allToGo.p2.latitude = -26.46646;
+  allToGo.p2.longitude = -49.11457;
 
-  allToGo.p3.latitude = -27.64018;
-  allToGo.p3.longitude = -48.68068;
+  allToGo.p3.latitude = -26.46642;
+  allToGo.p3.longitude = -49.11454;
 
-  allToGo.p4.latitude = -27.11618;
-  allToGo.p4.longitude = -49.64549;
-
-  currentPoint.latitude = -27.21260;
-  currentPoint.longitude = -49.64549;
 }
 
 
@@ -73,30 +71,42 @@ void setup(){
 
 void loop(){
 
-  /*while(Serial1.available())     
+  while(Serial1.available())     
   {
     int c = Serial1.read();  
     if(gps.encode(c))
     {
+
       getgps(gps, &currentPoint.latitude, &currentPoint.longitude);  
-      Serial.print("Latitude: ");
+
+      if(!inited) {
+
+        digitalWrite(49,LOW);
+        delay(2000);
+        inited = true;
+
+      }
+
+      /*Serial.print("Latitude: ");
       Serial.print(currentPoint.latitude, 5);
       Serial.print("  -   Longitude: ");
       Serial.print(currentPoint.longitude,5);   
-      goToNorth(); 
+      goToNorth();*/
+      while(!goTo(allToGo.p1)); //BLUMENAU
+      while(!goTo(allToGo.p2)); 
     }
-  }*/
+  }
 
-    goTo(allToGo.p1); //BLUMENAU
-    //goTo(allToGo.p2); //OTACILIO
-    //goTo(allToGo.p3); //PALHOCA
-    //goTo(allToGo.p4); //TESTE
+    /*while(!goTo(allToGo.p1)); //BLUMENAU
+    while(!goTo(allToGo.p2)); //OTACILIO
+    while(!goTo(allToGo.p3)); //PALHOCA*/
+
 
 }
 
 
 
-void goTo(Point point) {
+bool goTo(Point point) {
 
   float currentAngulation = compass.getCurrentAngulation();
 
@@ -157,6 +167,7 @@ void goTo(Point point) {
     }
   }
 
+  return true;
   delay(500);
 }
 
