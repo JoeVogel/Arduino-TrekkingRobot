@@ -8,9 +8,9 @@ class Sonar {
 public:
 
 	void defineSonar(int URTRIG, int URPWM, char positionSensor);
-	int  getFrontSonar();
-	int  getLeftSonar();
-	int  getRightSonar();
+	long  getFrontDistance();
+	long  getLeftDistance();
+	long  getRightDistance();
 
 
 private:
@@ -21,8 +21,6 @@ private:
 	int URPWM_r;
 	int URTRIG_l;
 	int URPWM_l;
-
-	int getDistance(char direction);
 
 };
 

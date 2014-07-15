@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "Ultrassonic_h"
 
-void Sonar::defineFrontSonar(int URTRIG, int URPWM, char positionSensor){
+void Sonar::defineSonar(int URTRIG, int URPWM, char positionSensor){
 	
 	switch(positionSensor){
 
