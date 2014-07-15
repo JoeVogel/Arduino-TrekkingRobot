@@ -110,11 +110,19 @@ bool Motor::turnToNorth(){
 			Serial.print("turnToNorth: ");
 			Serial.println(angle);
 			if(angle < 220) {
-				rightPower(0);
-				leftPower(250);
+				digitalWrite(this->motorBRight, HIGH);
+				digitalWrite(this->motorBLeft, LOW);
+				digitalWrite(this->motorARight, LOW);
+				digitalWrite(this->motorALeft, HIGH);
+				rightPower(40);
+				leftPower(40);
 			} else {
-				rightPower(250);
-				leftPower(0);
+				digitalWrite(this->motorBRight, LOW);
+				digitalWrite(this->motorBLeft, HIGH);
+				digitalWrite(this->motorARight, HIGH);
+				digitalWrite(this->motorALeft, LOW);
+				rightPower(40);
+				leftPower(40);
 			}
 		}
 	}else {
@@ -144,11 +152,19 @@ bool Motor::turnToDirection(float goalAngle) {
 
 
 			if(angle < goalAngle || angle >= (360 - goalAngle)) {
-				rightPower(100);
-				leftPower(0);
+				digitalWrite(this->motorBRight, HIGH);
+				digitalWrite(this->motorBLeft, LOW);
+				digitalWrite(this->motorARight, LOW);
+				digitalWrite(this->motorALeft, HIGH);
+				rightPower(40);
+				leftPower(40);
 			} else if(angle >= goalAngle || angle < (360 - goalAngle)) {
-				rightPower(0);
-				leftPower(100);
+				digitalWrite(this->motorBRight, LOW);
+				digitalWrite(this->motorBLeft, HIGH);
+				digitalWrite(this->motorARight, HIGH);
+				digitalWrite(this->motorALeft, LOW);
+				rightPower(40);
+				leftPower(40);
 			}
 		}
 

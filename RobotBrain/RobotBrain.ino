@@ -81,53 +81,19 @@ void loop(){
 
       float currentAngulation = compass.getCurrentAngulation();
 
-//      while(!motor.turnToNorth());
+      if(!point[use].checked) {
+        while(!motor.turnToNorth());
+        point[use].checked = true;
+      } else {
 
-      /*Nunca modificar essa função*/
-      float dlat = point[use].latitude - currentPoint.latitude;
-      float dlong = point[use].longitude - currentPoint.longitude;
-      float validationAngle = atan2(dlong,dlat) * 180 / PI;
-      /*Até aqui*/
+        /*Nunca modificar essa função*/
+        float dlat = point[use].latitude - currentPoint.latitude;
+        float dlong = point[use].longitude - currentPoint.longitude;
+        float validationAngle = atan2(dlong,dlat) * 180 / PI;
+        /*Até aqui*/
 
-      int distlat = (point[use].latitude * 100000) - (currentPoint.latitude * 100000);
-      int distlong = (point[use].longitude * 100000) - (currentPoint.longitude * 100000);
-
-      if(distlat < 0) {
-        distlat *= -1;
-      }
-      if(distlong < 0) {
-        distlong *= -1; 
-      }
-
-      if(validationAngle < 0) {
-        validationAngle *= -1;
-        validationAngle = 360 - validationAngle;
-      }
-
-      Serial.print("LATITUDE:");Serial.print(currentPoint.latitude,5);
-      Serial.print("LONGITUDE:");Serial.print(currentPoint.longitude,5);
-      Serial.print("DIST_LAT:");Serial.print(distlat);
-      Serial.print("\tDIST_LONG:");Serial.print(distlong);
-      Serial.print("\tANGULO PARA IR:");Serial.println(validationAngle);
-      delay(1000);
-
-      if(distlat > 2 || distlong > 2) {
-
-        while(!motor.turnToDirection(validationAngle));
-
-        motor.front(70);
-        delay(500);
-
-        currentAngulation = compass.getCurrentAngulation();
-
-        /*Nao modificar*/
-        dlat = point[use].latitude - currentPoint.latitude;
-        dlong = point[use].longitude - currentPoint.longitude;
-        validationAngle = atan2(dlong,dlat) * 180 / PI;
-        /*Nao modificar*/
-
-        distlat = (point[use].latitude * 100000) - (currentPoint.latitude * 100000);
-        distlong = (point[use].longitude * 100000) - (currentPoint.longitude * 100000);
+        int distlat = (point[use].latitude * 100000) - (currentPoint.latitude * 100000);
+        int distlong = (point[use].longitude * 100000) - (currentPoint.longitude * 100000);
 
         if(distlat < 0) {
           distlat *= -1;
@@ -135,6 +101,37 @@ void loop(){
         if(distlong < 0) {
           distlong *= -1; 
         }
+
+        if(validationAngle < 0) {
+          validationAngle *= -1;
+          validationAngle = 360 - validationAngle;
+        }
+
+        if(distlat > 2 || distlong > 2) {
+
+          while(!motor.turnToDirection(validationAngle));
+
+          motor.front(70);
+
+          currentAngulation = compass.getCurrentAngulation();
+
+          /*Nao modificar*/
+          dlat = point[use].latitude - currentPoint.latitude;
+          dlong = point[use].longitude - currentPoint.longitude;
+          validationAngle = atan2(dlong,dlat) * 180 / PI;
+          /*Nao modificar*/
+
+          distlat = (point[use].latitude * 100000) - (currentPoint.latitude * 100000);
+          distlong = (point[use].longitude * 100000) - (currentPoint.longitude * 100000);
+
+          if(distlat < 0) {
+            distlat *= -1;
+          }
+          if(distlong < 0) {
+            distlong *= -1; 
+          }
+        }
+
       }
 
     }
