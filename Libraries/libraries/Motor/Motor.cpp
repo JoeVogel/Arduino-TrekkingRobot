@@ -144,11 +144,11 @@ bool Motor::turnToDirection(float goalAngle) {
 
 
 			if(angle < goalAngle || angle >= (360 - goalAngle)) {
-				rightPower(250);
+				rightPower(100);
 				leftPower(0);
 			} else if(angle >= goalAngle || angle < (360 - goalAngle)) {
 				rightPower(0);
-				leftPower(250);
+				leftPower(100);
 			}
 		}
 
