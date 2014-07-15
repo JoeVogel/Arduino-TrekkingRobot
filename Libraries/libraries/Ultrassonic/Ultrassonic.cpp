@@ -1,11 +1,11 @@
 #include "Arduino.h"
 #include "Ultrassonic_h"
 
-void Sonar::defineSonar(int URTRIG, int URPWM, char positionSensor){
+void Ultrassonic::defineSonar(int URTRIG, int URPWM, char positionSensor){
 	
 	switch(positionSensor){
 
-		case "f":
+		case 'f':
 			this->URTRIG_f = URTRIG;
 			this->URPWM_f = URPWM;
 
@@ -14,14 +14,14 @@ void Sonar::defineSonar(int URTRIG, int URPWM, char positionSensor){
   
   			pinMode(this->URPWM_f, INPUT);  
 			break;
-		case "r":
+		case 'r':
 			this->URTRIG_r = URTRIG;
 			this->URPWM_r = URPWM;
 
 			pinMode(this->URTRIG_r,OUTPUT);                   
   			pinMode(this->URPWM_r, INPUT); 
 			break;
-		case "l":
+		case 'l':
 			this->URTRIG_l = URTRIG;
 			this->URPWM_l = URPWM;
 
@@ -32,7 +32,7 @@ void Sonar::defineSonar(int URTRIG, int URPWM, char positionSensor){
 
 }
 
-long Sonar::getFrontDistance(){
+long Ultrassonic::getFrontDistance(){
 
 	digitalWrite(this->URTRIG_f, LOW);
     digitalWrite(this->URTRIG_f, HIGH); 
@@ -47,7 +47,7 @@ long Sonar::getFrontDistance(){
    }
 }
 
-long Sonar::getLeftDistance(){
+long Ultrassonic::getLeftDistance(){
 
 	digitalWrite(this->URTRIG_l, LOW);
   	delayMicroseconds(2);
@@ -64,7 +64,7 @@ long Sonar::getLeftDistance(){
   	}
 }
 
-long Sonar::getRightDistance(){
+long Ultrassonic::getRightDistance(){
 
 	digitalWrite(this->URTRIG_r, LOW);
   	delayMicroseconds(2);

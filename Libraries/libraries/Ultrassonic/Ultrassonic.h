@@ -3,11 +3,11 @@
 #ifndef Ultrassonic_h
 #define Ultrassonic_h
 
-class Sonar {
+class Ultrassonic {
 
 public:
 
-	void defineSonar(int URTRIG, int URPWM, char positionSensor);
+	void  defineSonar(int URTRIG, int URPWM, char positionSensor);
 	long  getFrontDistance();
 	long  getLeftDistance();
 	long  getRightDistance();
