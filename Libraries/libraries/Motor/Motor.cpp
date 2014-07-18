@@ -212,10 +212,10 @@ int Motor::defineQuadrant(int angulation) {
     quadrants[2][0] = 181;
     quadrants[2][1] = 270;
     quadrants[3][0] = 271;
-    quadrants[3][1] = 360;
+    quadrants[3][1] = 359;
     
     for(int i = 0; i < 4; i++) {
-        if(quadrants[i][0] < angulation && quadrants[i][1] > angulation) {
+        if(angulation > quadrants[i][0] && quadrants[i][1] > angulation) {
             quadrant = i + 1;
             break;
         }
