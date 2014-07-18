@@ -52,18 +52,18 @@ void setup(){
   motor.defineLeft(5,6,7);
   motor.defineCompass(compass,20);
 
-  point[0].latitude = -23.64667;
-  point[0].longitude = -46.57254;
+  point[0].latitude = -23.64677;
+  point[0].longitude = -46.57240;
   point[0].sequence = 1;
   point[0].checked = false;
 
-  point[1].latitude = -23.64660;
-  point[1].longitude = -46.57268;
+  point[1].latitude = -23.64692;
+  point[1].longitude = -46.57250;
   point[1].sequence = 2;
   point[1].checked = false;
 
-  point[2].latitude = -23.64650;
-  point[2].longitude = -46.57261;
+  point[2].latitude = -23.64677;
+  point[2].longitude = -46.57275;
   point[2].sequence = 2;
   point[2].checked = false;
 
@@ -73,8 +73,12 @@ void setup(){
 
 
 void loop(){
-  
-  
+
+  bool enter = false;
+
+  Serial.println(compass.getCurrentAngulation());
+
+  if(enter)
   while(Serial1.available())     
   {
     int c = Serial1.read();
@@ -82,12 +86,10 @@ void loop(){
     {
 
       getgps(gps, &currentPoint.latitude, &currentPoint.longitude);  
+
+      Serial.print("GPS LAT: ");Serial.print(currentPoint.latitude,5);
+      Serial.print("GPS LONG: ");Serial.println(currentPoint.longitude,5);
       
-      //Serial.print("LAT___: ");Serial.print(currentPoint.latitude,5);
-      //Serial.println("LON___: ");Serial.print(currentPoint.longitude,5);
-
-      //float currentAngulation = compass.getCurrentAngulation();
-
       if(!point[use].checked) {
         while(!motor.turnToNorth());
         point[use].checked = true;
@@ -129,15 +131,26 @@ void loop(){
 
           while  (!motor.turnToDirection(validationAngle));
 
-          if(count == 5 && acceleration < 200) {
-            count = 0;
-            acceleration += 10;
-          }
-          motor.front(acceleration); 
-          if(count < 5) {
-            count++; 
+          float angleReaded = compass.getCurrentAngulation();
+          int diferrence = angleReaded - validationAngle;
+          if(diferrence < 0) {
+            diferrence *= -1;
           }
 
+          if(diferrence < 20) {
+            motor.front(128);
+            int mapAngle = map(angleReaded,5,20,80,180);
+            if(angleReaded < validationAngle) {
+              Serial.println("PWM__RIGHT__");
+              motor.rightPower(mapAngle);
+              motor.leftPower(180 - mapAngle);
+            } else {
+              Serial.println("PWM__LEFT__");
+              motor.rightPower(180 - mapAngle);
+              motor.leftPower(mapAngle);
+            }
+          }
+          
         } else {
           motor.stop();
           for(int i = 0; i < 3; i++) {
