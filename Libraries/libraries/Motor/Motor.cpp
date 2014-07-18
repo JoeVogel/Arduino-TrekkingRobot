@@ -104,26 +104,39 @@ bool Motor::turnToNorth(){
 
 	float angle = this->compass.getCurrentAngulation();
 	_front();
+	int acceleration = 0;
+	int count = 7;
 	if(angle > 10 && angle < 345) {
 		while(angle > 10 && angle < 345) {
 			angle = this->compass.getCurrentAngulation();
 			Serial.print("turnToNorth: ");
 			Serial.println(angle);
-			if(angle < 220) {
-				digitalWrite(this->motorBRight, HIGH);
-				digitalWrite(this->motorBLeft, LOW);
-				digitalWrite(this->motorARight, LOW);
-				digitalWrite(this->motorALeft, HIGH);
-				rightPower(40);
-				leftPower(40);
-			} else {
+			if(angle > 220) {
+				Serial.println("__RIGHT__");
 				digitalWrite(this->motorBRight, LOW);
 				digitalWrite(this->motorBLeft, HIGH);
 				digitalWrite(this->motorARight, HIGH);
 				digitalWrite(this->motorALeft, LOW);
-				rightPower(40);
-				leftPower(40);
+				if(count == 7) {
+					count = 0;
+					acceleration += 10;
+					rightPower(acceleration);
+					leftPower(acceleration);
+				}
+			} else {
+				Serial.println("__LEFT__");
+				digitalWrite(this->motorBRight, HIGH);
+				digitalWrite(this->motorBLeft, LOW);
+				digitalWrite(this->motorARight, LOW);
+				digitalWrite(this->motorALeft, HIGH);
+				if(count == 7) {
+					count = 0;
+					acceleration += 3;
+					rightPower(acceleration);
+					leftPower(acceleration);
+				}
 			}
+			count++;
 		}
 	}else {
 		rightPower(0);
@@ -135,40 +148,79 @@ bool Motor::turnToNorth(){
 
 bool Motor::turnToDirection(float goalAngle) {
 	float angle = this->compass.getCurrentAngulation();
-	Serial.println(angle);
 	if(goalAngle > 365) {
 		goalAngle = 0;
 	}
 	_front();
+	int acceleration = 0;
+	int count = 5;
 	if(angle > (goalAngle + this->threshold) || angle < (goalAngle - this->threshold)) {
 
 		while(angle > (goalAngle + this->threshold) || angle < (goalAngle - this->threshold)) {
 			angle = this->compass.getCurrentAngulation();
-			Serial.print("turnToDirection - ");
-			Serial.print("angle: ");
-			Serial.print(angle);
-			Serial.print("\tgoalAngle: ");
-			Serial.println(goalAngle);
+			Serial.print("angle: ");Serial.print(angle);
+			Serial.print("\tgoalAngle: ");Serial.print(goalAngle);
+
+			int quadrantGoal = this->defineQuadrant(goalAngle);
+			int quadrantCurrent = this->defineQuadrant(angle);
 
 
-			if(angle < goalAngle || angle >= (360 - goalAngle)) {
+			/*if(
+                (quadrantCurrent == 1 && quadrantGoal == 4) ||
+                (quadrantCurrent == 2 && quadrantGoal == 1) ||
+                (quadrantCurrent == 3 && quadrantGoal == 2) ||
+                (quadrantCurrent == 4 && quadrantGoal == 3)
+            ) {
+				Serial.println("__RIGHT__");
 				digitalWrite(this->motorBRight, HIGH);
 				digitalWrite(this->motorBLeft, LOW);
 				digitalWrite(this->motorARight, LOW);
 				digitalWrite(this->motorALeft, HIGH);
-				rightPower(40);
-				leftPower(40);
-			} else if(angle >= goalAngle || angle < (360 - goalAngle)) {
+				rightPower(80);
+				leftPower(80);
+			} else {
+				Serial.println("__LEFT__");*/
 				digitalWrite(this->motorBRight, LOW);
 				digitalWrite(this->motorBLeft, HIGH);
 				digitalWrite(this->motorARight, HIGH);
 				digitalWrite(this->motorALeft, LOW);
-				rightPower(40);
-				leftPower(40);
-			}
+				if(count == 5) {
+					count = 0;
+					acceleration += 3;
+					rightPower(acceleration);
+					leftPower(acceleration);
+				}
+				count++;
+			//}
 		}
 
 	}else {
 		return true;
 	}
+}
+
+
+int Motor::defineQuadrant(int angulation) {
+
+	int quadrant = -1;
+    int quadrants[4][2];
+    
+    quadrants[0][0] = 0;
+    quadrants[0][1] = 90;
+    quadrants[1][0] = 91;
+    quadrants[1][1] = 180;
+    quadrants[2][0] = 181;
+    quadrants[2][1] = 270;
+    quadrants[3][0] = 271;
+    quadrants[3][1] = 360;
+    
+    for(int i = 0; i < 4; i++) {
+        if(quadrants[i][0] < angulation && quadrants[i][1] > angulation) {
+            quadrant = i + 1;
+            break;
+        }
+    }
+    
+    return quadrant;
+    
 }

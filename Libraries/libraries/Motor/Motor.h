@@ -40,6 +40,7 @@ private:
 
 	void _front();
 	void _back();
+	int defineQuadrant(int angulation);
 
 	Compass compass;
 
