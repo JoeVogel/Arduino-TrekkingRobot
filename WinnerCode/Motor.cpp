@@ -1,8 +1,9 @@
 #include "Arduino.h"
-#include <Motor.h>
+#include "Motor.h"
 #include <Wire.h>
-#include <HMC5883L.h>
-#include <Compass.h>
+#include "HMC5883L.h"
+#include "Compass.h"
+//#include "HMC6352.h"
 
 void Motor::defineCompass(Compass compass, int threshold) {
 	this->compass = compass;
@@ -37,8 +38,8 @@ void Motor::stop() {
 void Motor::front(int power) {
 	this->APower = power;
 	this->BPower = power;
-	analogWrite(this->motorAPower, 128);
-	analogWrite(this->motorBPower, 100);
+	analogWrite(this->motorAPower, power);
+	analogWrite(this->motorBPower, power);
 	this->_front();
 }
 
@@ -50,11 +51,11 @@ void Motor::_front() {
 }
 
 
-void Motor::back(int power) {
-	this->APower = power;
-	this->BPower = power;
-	analogWrite(this->motorAPower, power);
-	analogWrite(this->motorBPower, power);
+void Motor::back(int powerR, int powerL) {
+	this->APower = powerR;
+	this->BPower = powerL;
+	analogWrite(this->motorAPower, powerR);
+	analogWrite(this->motorBPower, powerL);
 	this->_back();
 }
 
@@ -104,43 +105,29 @@ bool Motor::turnToNorth(){
 
 	float angle = this->compass.getCurrentAngulation();
 	_front();
-	int acceleration = 0;
-	int count = 7;
+	int acceleration = 200;
 	if(angle > 10 && angle < 345) {
 		while(angle > 10 && angle < 345) {
 			angle = this->compass.getCurrentAngulation();
-			Serial.print("turnToNorth: ");
-			Serial.println(angle);
-			if(angle > 220) {
-				Serial.println("__RIGHT__");
+			//Serial.print("turnToNorth: ");
+			//Serial.println(angle);
+			if(angle > 180) {
+				//Serial.println("__RIGHT__");
 				digitalWrite(this->motorBRight, LOW);
 				digitalWrite(this->motorBLeft, HIGH);
 				digitalWrite(this->motorARight, HIGH);
 				digitalWrite(this->motorALeft, LOW);
-				if(count == 7) {
-					count = 0;
-					acceleration += 10;
-					if(acceleration < 120) {
-						rightPower(acceleration);
-						leftPower(acceleration);
-					}
-				}
+				rightPower(acceleration);
+				leftPower(acceleration);
 			} else {
-				Serial.println("__LEFT__");
+				//Serial.println("__LEFT__");
 				digitalWrite(this->motorBRight, HIGH);
 				digitalWrite(this->motorBLeft, LOW);
 				digitalWrite(this->motorARight, LOW);
 				digitalWrite(this->motorALeft, HIGH);
-				if(count == 7) {
-					count = 0;
-					acceleration += 3;
-					if(acceleration < 120) {
-						rightPower(acceleration);
-						leftPower(acceleration);
-					}
-				}
+				rightPower(acceleration);
+				leftPower(acceleration);
 			}
-			count++;
 		}
 	}else {
 		rightPower(0);
@@ -156,57 +143,35 @@ bool Motor::turnToDirection(float goalAngle) {
 		goalAngle = 0;
 	}
 	_front();
-	int acceleration = 80;
-	int count = 5;
+	int acceleration = 200;
 	if(angle > (goalAngle + this->threshold) || angle < (goalAngle - this->threshold)) {
 
 		while(angle > (goalAngle + this->threshold) || angle < (goalAngle - this->threshold)) {
 			angle = this->compass.getCurrentAngulation();
 
 			angle = this->compass.getCurrentAngulation();
-			Serial.print("turDirection: ");
-			Serial.print(angle);
-			Serial.print("goaDirection: ");
-			Serial.println(goalAngle);
-
-			int quadrantGoal = this->defineQuadrant(goalAngle);
-			int quadrantCurrent = this->defineQuadrant(angle);
-
-			int diferrence = angle - goalAngle;
-			if(diferrence < 0) {
-				diferrence *= -1;
-			}
+			//Serial.print("turDirection: ");
+			//Serial.print(angle);
+			//Serial.print("goaDirection: ");
+			//Serial.println(goalAngle);
 
 			if(angle < goalAngle) {
-				Serial.println("__RIGHT__");
+				//Serial.println("__RIGHT__");
 				digitalWrite(this->motorBRight, LOW);
 				digitalWrite(this->motorBLeft, HIGH);
 				digitalWrite(this->motorARight, HIGH);
 				digitalWrite(this->motorALeft, LOW);
-				if(count == 7) {
-					count = 0;
-					acceleration += 10;
-					if(acceleration < 120) {
-						rightPower(acceleration);
-						leftPower(acceleration);
-					}
-				}
+				rightPower(acceleration);
+				leftPower(acceleration);
 			} else {
-				Serial.println("__LEFT__");
+				//Serial.println("__LEFT__");
 				digitalWrite(this->motorBRight, HIGH);
 				digitalWrite(this->motorBLeft, LOW);
 				digitalWrite(this->motorARight, LOW);
 				digitalWrite(this->motorALeft, HIGH);
-				if(count == 7) {
-					count = 0;
-					acceleration += 3;
-					if(acceleration < 120) {
-						rightPower(acceleration);
-						leftPower(acceleration);
-					}
-				}
+				rightPower(acceleration);
+				leftPower(acceleration);
 			}
-			count++;
 		}
 
 	}else {

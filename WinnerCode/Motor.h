@@ -1,8 +1,9 @@
 #include "Arduino.h"
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_HMC5883_U.h>
-#include <Compass.h>
+//#include <Adafruit_Sensor.h>
+//#include <Adafruit_HMC5883_U.h>
+#include "Compass.h"
+//#include "HMC6352.h"
 
 #ifndef Motor_h
 #define Motor_h
@@ -21,27 +22,22 @@ public:
 	void front(int power);
 	bool turnToNorth();
 	bool turnToDirection(float goalAngle);
-	void back(int power);
+	void back(int powerR, int powerL);
 	void rightPower(int power);
 	void leftPower(int power);
 	void right(int power);
 	void left(int power);
 	void stop();
-
-
-private:
+	void _front();
+	void _back();
+	int defineQuadrant(int angulation);
+	int threshold;
 	int motorARight;
 	int motorALeft;
 	int motorAPower;
 	int motorBRight;
 	int motorBLeft;
 	int motorBPower;
-	int threshold;
-
-	void _front();
-	void _back();
-	int defineQuadrant(int angulation);
-
 	Compass compass;
 
 };

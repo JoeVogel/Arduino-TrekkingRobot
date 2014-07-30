@@ -2,19 +2,19 @@
 #include <TinyGPS.h>
 #include <Wire.h>
 
-#define TERMBAUD  115200
+#define TERMBAUD  9600
 #define GPSBAUD  4800
 
 TinyGPS gps;
 long longitudeDestino = -4911451, latitudeDestino = -2646639;
-LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
+//LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 void getgps(TinyGPS &gps);
 
 void setup()
 {
-  lcd.begin(16,2);
-  lcd.setCursor(0,0);
+  //lcd.begin(16,2);
+  //lcd.setCursor(0,0);
   
   // Sets baud rate of your terminal program
   Serial.begin(TERMBAUD);
@@ -44,11 +44,14 @@ void getgps(TinyGPS &gps)
   //Captura posição atual
   gps.f_get_position(&latitude, &longitude);
 
+  Serial.print("LAT: ");Serial.print(latitude);
+  Serial.print("LON: ");Serial.println(longitude);
+
   //Escreve na tela de LCD
-  lcd.setCursor(0,0);
+  /*lcd.setCursor(0,0);
   lcd.print(latitude,5);
   lcd.setCursor(0,1);
-  lcd.print(longitude,5);
+  lcd.print(longitude,5);*/
  
   //Bussola
   /*

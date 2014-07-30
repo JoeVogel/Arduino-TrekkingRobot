@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include <Wire.h>
-#include <HMC5883L.h>
+#include "HMC5883L.h"
 
 #ifndef Compass_h
 #define Compass_h

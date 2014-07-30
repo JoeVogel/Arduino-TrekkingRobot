@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <HMC5883L.h>
-#include <Compass.h>
+//#include <Compass.h>
+#include <HMC6352.h>
 #include <Motor.h>
 #include <TinyGPS.h>
 
@@ -10,13 +11,14 @@
 #define PI 3.14159265358979323846
 
 TinyGPS gps;
-Compass compass;
+HMC6352 compass;
 Motor motor;
 
 typedef struct Point {
   float latitude;
   float longitude;
   float distance;
+  bool northDefined;
   bool checked;
   int sequence;
 } Point;
@@ -46,7 +48,8 @@ void setup(){
   pinMode(49,OUTPUT);
   digitalWrite(49,HIGH);
 
-  compass.init(declinationAngle);
+  //compass.init(declinationAngle);
+  compass.init();
 
   motor.defineRight(3,2,4);
   motor.defineLeft(5,6,7);
@@ -56,16 +59,19 @@ void setup(){
   point[0].longitude = -46.57240;
   point[0].sequence = 1;
   point[0].checked = false;
+  point[0].northDefined = false;
 
   point[1].latitude = -23.64692;
   point[1].longitude = -46.57250;
   point[1].sequence = 2;
   point[1].checked = false;
+  point[1].northDefined = false;
 
   point[2].latitude = -23.64677;
   point[2].longitude = -46.57275;
   point[2].sequence = 2;
   point[2].checked = false;
+  point[2].northDefined = false;
 
 }
 
@@ -74,11 +80,11 @@ void setup(){
 
 void loop(){
 
-  bool enter = false;
+  /*bool enter = false;
 
   Serial.println(compass.getCurrentAngulation());
 
-  if(enter)
+  if(enter)*/
   while(Serial1.available())     
   {
     int c = Serial1.read();
@@ -87,12 +93,13 @@ void loop(){
 
       getgps(gps, &currentPoint.latitude, &currentPoint.longitude);  
 
-      Serial.print("GPS LAT: ");Serial.print(currentPoint.latitude,5);
-      Serial.print("GPS LONG: ");Serial.println(currentPoint.longitude,5);
+      //Serial.print("GPS LAT: ");Serial.print(currentPoint.latitude,5);
+      //Serial.print("GPS LONG: ");Serial.println(currentPoint.longitude,5);
       
       if(!point[use].checked) {
         while(!motor.turnToNorth());
         point[use].checked = true;
+        point[use].northDefined = true;
       } else {
 
         /*Nunca modificar essa função*/
@@ -120,35 +127,38 @@ void loop(){
         //Serial.print("DIST LONG: ");Serial.println(distlong);
 
         if(distlat < 6 && distlong < 6) {
-          acceleration = 80;
-          count = 9;
+          acceleration = 60;
         } else {
-          count = 5;
+          acceleration = 80;
         }
 
 
-        if(distlat > 1 || distlong > 1) {
+        if(distlat == 0 || distlong == 0) {
 
-          while  (!motor.turnToDirection(validationAngle));
-
+          
           float angleReaded = compass.getCurrentAngulation();
           int diferrence = angleReaded - validationAngle;
+
+          Serial.print("ANGLE: ");Serial.print(angleReaded);
+          Serial.print("DIRECTION: ");Serial.println(diferrence);
           if(diferrence < 0) {
             diferrence *= -1;
           }
 
-          if(diferrence < 20) {
-            motor.front(128);
-            int mapAngle = map(angleReaded,5,20,80,180);
+          if(point[use].checked && diferrence < 40) {
+            motor._front();
+            int mapAngle = map(angleReaded,0,39,40,100);
             if(angleReaded < validationAngle) {
-              Serial.println("PWM__RIGHT__");
+              //Serial.println("PWM__RIGHT__");
               motor.rightPower(mapAngle);
-              motor.leftPower(180 - mapAngle);
+              motor.leftPower(101 - mapAngle);
             } else {
-              Serial.println("PWM__LEFT__");
-              motor.rightPower(180 - mapAngle);
+              //Serial.println("PWM__LEFT__");
+              motor.rightPower(101 - mapAngle);
               motor.leftPower(mapAngle);
             }
+          } else {
+            while (!motor.turnToDirection(validationAngle));
           }
           
         } else {

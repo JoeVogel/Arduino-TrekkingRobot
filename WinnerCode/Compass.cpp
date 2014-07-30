@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include <Wire.h>
-#include <HMC5883L.h>
-#include <Compass.h>
+#include "HMC5883L.h"
+#include "Compass.h"
 
 
 void Compass::init(float declinationAngle) {
@@ -49,8 +49,8 @@ float Compass::getCurrentAngulation() {
   // Find yours here: http://www.magnetic-declination.com/
   // Mine is: 2� 37' W, which is 2.617 Degrees, or (which we need) 0.0456752665 radians, I will use 0.0457
   // If you cannot find your Declination, comment out these two lines, your compass will be slightly off.
-  float declinationAngle = 0.009;
-  heading += declinationAngle;
+  //float declinationAngle = 0.009;
+  //heading += declinationAngle;
 
   // Correct for when signs are reversed.
   if(heading < 0)
